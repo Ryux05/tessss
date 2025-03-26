@@ -1,4 +1,4 @@
--- auto arise 
+-- Auto Arise
 local player = game:GetService("Players").LocalPlayer
 local settings = player:WaitForChild("Settings")
 
@@ -22,36 +22,39 @@ local Tabs = {
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
--- Fungsi untuk mengaktifkan/mematikan fitur
+-- 🔹 Fungsi untuk mengaktifkan AutoArise
 local function setAutoArise(state)
     settings:SetAttribute("AutoArise", state)
     print("AutoArise:", state and "ON" or "OFF")
 end
 
-local autoClickRunning = false -- Menyimpan status AutoClick
+-- 🔹 Pantau perubahan AutoArise
+settings:GetAttributeChangedSignal("AutoArise"):Connect(function()
+    print("⚡ AutoArise diubah menjadi:", settings:GetAttribute("AutoArise"))
+end)
 
 -- 🔹 Fungsi untuk menjalankan AutoClick
+local autoClickRunning = false
+
 local function startAutoClick(state)
     if state then
         if autoClickRunning then return end -- Cegah duplikasi loop
         autoClickRunning = true
         print("✅ AutoClick Dimulai!")
 
-        while settings:GetAttribute("AutoClick") do
+        while autoClickRunning do
             task.wait(0.5)
-            
-            -- 🔹 Pastikan ClickEvent ada sebelum digunakan
+
             local clickEvent = game:GetService("ReplicatedStorage"):FindFirstChild("ClickEvent")
             if clickEvent then
                 clickEvent:FireServer()
                 print("🖱 AutoClick berjalan...")
             else
                 print("⚠ ClickEvent tidak ditemukan! AutoClick dihentikan.")
-                break
+                autoClickRunning = false
             end
         end
 
-        autoClickRunning = false
         print("⛔ AutoClick Dihentikan!")
     else
         autoClickRunning = false
@@ -59,7 +62,7 @@ local function startAutoClick(state)
     end
 end
 
--- Toggle AutoArise
+-- 🔹 Toggle AutoArise
 local AutoAriseToggle = Tabs.Main:AddToggle("AutoAriseToggle", { Title = "AutoArise", Default = settings:GetAttribute("AutoArise") or false })
 AutoAriseToggle:OnChanged(function(state)
     setAutoArise(state)
@@ -68,14 +71,15 @@ end)
 -- 🔹 Toggle AutoClick
 local AutoClickToggle = Tabs.Main:AddToggle("AutoClickToggle", { Title = "AutoClick", Default = settings:GetAttribute("AutoClick") or false })
 AutoClickToggle:OnChanged(function(state)
+    startAutoClick(state)
+end)
+
+-- 🔹 Pantau perubahan AutoClick
+settings:GetAttributeChangedSignal("AutoClick"):Connect(function()
     startAutoClick(settings:GetAttribute("AutoClick"))
 end)
 
-
-
-
---loadstring(game:HttpGet("https://raw.githubusercontent.com/Ryux05/tessss/refs/heads/main/main.lua"))
-
+-- Load UI Fluent
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
@@ -87,7 +91,6 @@ SaveManager:SetFolder("FluentScriptHub/specific-game")
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
 
-
 Window:SelectTab(1)
 
 Fluent:Notify({
@@ -95,6 +98,5 @@ Fluent:Notify({
     Content = "The script has been loaded.",
     Duration = 8
 })
-
 
 SaveManager:LoadAutoloadConfig()
