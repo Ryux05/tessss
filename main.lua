@@ -28,9 +28,35 @@ local function setAutoArise(state)
     print("AutoArise:", state and "ON" or "OFF")
 end
 
-local function setAutoClick(state)
-    settings:SetAttribute("AutoClick", state)
-    print("AutoClick:", state and "ON" or "OFF")
+local autoClickRunning = false -- Menyimpan status AutoClick
+
+-- 🔹 Fungsi untuk menjalankan AutoClick
+local function startAutoClick(state)
+    if state then
+        if autoClickRunning then return end -- Cegah duplikasi loop
+        autoClickRunning = true
+        print("✅ AutoClick Dimulai!")
+
+        while settings:GetAttribute("AutoClick") do
+            task.wait(0.5)
+            
+            -- 🔹 Pastikan ClickEvent ada sebelum digunakan
+            local clickEvent = game:GetService("ReplicatedStorage"):FindFirstChild("ClickEvent")
+            if clickEvent then
+                clickEvent:FireServer()
+                print("🖱 AutoClick berjalan...")
+            else
+                print("⚠ ClickEvent tidak ditemukan! AutoClick dihentikan.")
+                break
+            end
+        end
+
+        autoClickRunning = false
+        print("⛔ AutoClick Dihentikan!")
+    else
+        autoClickRunning = false
+        print("⛔ AutoClick Dihentikan!")
+    end
 end
 
 -- Toggle AutoArise
@@ -39,36 +65,16 @@ AutoAriseToggle:OnChanged(function(state)
     setAutoArise(state)
 end)
 
-
-local running = false -- Menyimpan status loop AutoClick
-
--- Fungsi untuk menjalankan AutoClick
-local function startAutoClick()
-    if running then return end -- Cegah duplikasi loop
-    running = true
-    print("✅ AutoClick Dimulai!")
-    
-    while settings:GetAttribute("AutoClick") do
-        task.wait(0.5)
-        game:GetService("ReplicatedStorage"):WaitForChild("ClickEvent"):FireServer()
-        print("🖱 AutoClick berjalan...")
-    end
-
-    running = false
-    print("⛔ AutoClick Dihentikan!")
+-- 🔹 Toggle AutoClick
+local AutoClickToggle = Tabs.Main:AddToggle("AutoClickToggle", { Title = "AutoClick", Default = settings:GetAttribute("AutoClick") or false })
+AutoClickToggle:OnChanged(function(state)
+    startAutoClick(settings:GetAttribute("AutoClick"))
 end
 
--- Pantau perubahan AutoClick
-settings:GetAttributeChangedSignal("AutoClick"):Connect(function()
-    if settings:GetAttribute("AutoClick") then
-        startAutoClick() -- Mulai loop
-    else
-        running = false -- Hentikan loop
-    end
-end)
 
 
---loadstring(game:HttpGet("https://raw.githubusercontent.com/Ryux05/tessss/refs/heads/main/main.lua"))()
+
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/Ryux05/tessss/refs/heads/main/main.lua"))
 
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
