@@ -39,28 +39,40 @@ AutoAriseToggle:OnChanged(function(state)
     setAutoArise(state)
 end)
 
--- Toggle AutoClick
-local AutoClickToggle = Tabs.Main:AddToggle("AutoClickToggle", { Title = "AutoClick", Default = settings:GetAttribute("AutoClick") or false })
-AutoClickToggle:OnChanged(function(state)
-    setAutoClick(state)
-end)
 
--- Pastikan toggle tetap update jika ada perubahan dari luar
-settings:GetAttributeChangedSignal("AutoArise"):Connect(function()
-    AutoAriseToggle:SetValue(settings:GetAttribute("AutoArise"))
-end)
+local running = false -- Menyimpan status loop AutoClick
 
+-- Fungsi untuk menjalankan AutoClick
+local function startAutoClick()
+    if running then return end -- Cegah duplikasi loop
+    running = true
+    print("✅ AutoClick Dimulai!")
+    
+    while settings:GetAttribute("AutoClick") do
+        task.wait(0.5)
+        game:GetService("ReplicatedStorage"):WaitForChild("ClickEvent"):FireServer()
+        print("🖱 AutoClick berjalan...")
+    end
+
+    running = false
+    print("⛔ AutoClick Dihentikan!")
+end
+
+-- Pantau perubahan AutoClick
 settings:GetAttributeChangedSignal("AutoClick"):Connect(function()
-    AutoClickToggle:SetValue(settings:GetAttribute("AutoClick"))
+    if settings:GetAttribute("AutoClick") then
+        startAutoClick() -- Mulai loop
+    else
+        running = false -- Hentikan loop
+    end
 end)
 
 
---loadstring(game:HttpGet("https://github.com/Ryux05/tessss/blob/main/arise.lua"))
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/Ryux05/tessss/refs/heads/main/main.lua"))
 
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
-SaveManager:SetIgnoreIndexes({})
 SaveManager:SetIgnoreIndexes({})
 
 InterfaceManager:SetFolder("FluentScriptHub")
