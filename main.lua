@@ -68,7 +68,7 @@ settings:GetAttributeChangedSignal("AutoClick"):Connect(function()
 end)
 
 
---loadstring(game:HttpGet("https://raw.githubusercontent.com/Ryux05/tessss/refs/heads/main/main.lua"))
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/Ryux05/tessss/refs/heads/main/main.lua"))()
 
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
