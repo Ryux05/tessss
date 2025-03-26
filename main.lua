@@ -69,7 +69,7 @@ end)
 local AutoClickToggle = Tabs.Main:AddToggle("AutoClickToggle", { Title = "AutoClick", Default = settings:GetAttribute("AutoClick") or false })
 AutoClickToggle:OnChanged(function(state)
     startAutoClick(settings:GetAttribute("AutoClick"))
-end
+end)
 
 
 
