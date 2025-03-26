@@ -2,77 +2,115 @@
 local player = game:GetService("Players").LocalPlayer
 local settings = player:WaitForChild("Settings")
 
--- Fungsi untuk mengaktifkan AutoArise
-local function enableAutoArise()
-    if settings:GetAttribute("AutoArise") ~= true then
-        settings:SetAttribute("AutoArise", true) -- Aktifkan AutoArise
-        print("✅ AutoArise telah diaktifkan!")
-    else
-        print("⚠ AutoArise sudah aktif.")
-    end
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "Fluent " .. Fluent.Version,
+    SubTitle = "by Myuko",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+})
+
+-- Tab utama
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "gamepad-2" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+}
+
+-- Fungsi untuk mengaktifkan/mematikan fitur
+local function setAutoArise(state)
+    settings:SetAttribute("AutoArise", state)
+    print("AutoArise:", state and "ON" or "OFF")
 end
 
--- Aktifkan AutoArise saat script dimulai
-task.wait(1) -- Tunggu sebentar agar Settings siap
-enableAutoArise()
+local function setAutoClick(state)
+    settings:SetAttribute("AutoClick", state)
+    print("AutoClick:", state and "ON" or "OFF")
+end
 
--- Pantau perubahan pada atribut AutoArise
-settings:GetAttributeChangedSignal("AutoArise"):Connect(function()
-    if settings:GetAttribute("AutoArise") then
-        print("🔄 AutoArise tetap aktif.")
-    end
+-- Toggle AutoArise
+local AutoAriseToggle = Tabs.Main:AddToggle("AutoAriseToggle", { Title = "AutoArise", Default = settings:GetAttribute("AutoArise") or false })
+AutoAriseToggle:OnChanged(function(state)
+    setAutoArise(state)
 end)
 
--- auto click
+-- Toggle AutoClick
+local AutoClickToggle = Tabs.Main:AddToggle("AutoClickToggle", { Title = "AutoClick", Default = settings:GetAttribute("AutoClick") or false })
+AutoClickToggle:OnChanged(function(state)
+    setAutoClick(state)
+end)
+
+-- Pastikan toggle tetap update jika ada perubahan dari luar
+settings:GetAttributeChangedSignal("AutoArise"):Connect(function()
+    AutoAriseToggle:SetValue(settings:GetAttribute("AutoArise"))
+end)
+
+settings:GetAttributeChangedSignal("AutoClick"):Connect(function()
+    AutoClickToggle:SetValue(settings:GetAttribute("AutoClick"))
+end)
+
+
+---loadstring(game:HttpGet("https://github.com/Ryux05/tessss/blob/main/arise.lua"))
+-- auto arise 
 local player = game:GetService("Players").LocalPlayer
 local settings = player:WaitForChild("Settings")
 
--- Fungsi untuk mengaktifkan AutoClick
-local function enableAutoClick()
-    if settings:GetAttribute("AutoClick") ~= true then
-        settings:SetAttribute("AutoClick", true) -- Aktifkan AutoClick
-        print("✅ AutoClick telah diaktifkan!")
-    else
-        print("⚠ AutoClick sudah aktif.")
-    end
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "Fluent " .. Fluent.Version,
+    SubTitle = "by Myuko",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+})
+
+-- Tab utama
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "gamepad-2" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+}
+
+-- Fungsi untuk mengaktifkan/mematikan fitur
+local function setAutoArise(state)
+    settings:SetAttribute("AutoArise", state)
+    print("AutoArise:", state and "ON" or "OFF")
 end
 
--- Jalankan AutoClick otomatis setiap 0.5 detik
-task.spawn(function()
-    while true do
-        task.wait(0.5) -- Jeda waktu antar klik
-        if settings:GetAttribute("AutoClick") then
-            game:GetService("ReplicatedStorage"):WaitForChild("ClickEvent"):FireServer()
-            print("🖱 AutoClick berjalan...")
-        end
-    end
+local function setAutoClick(state)
+    settings:SetAttribute("AutoClick", state)
+    print("AutoClick:", state and "ON" or "OFF")
+end
+
+-- Toggle AutoArise
+local AutoAriseToggle = Tabs.Main:AddToggle("AutoAriseToggle", { Title = "AutoArise", Default = settings:GetAttribute("AutoArise") or false })
+AutoAriseToggle:OnChanged(function(state)
+    setAutoArise(state)
 end)
 
--- Aktifkan AutoClick saat script dimulai
-task.wait(1) -- Tunggu sebentar agar Settings siap
-enableAutoClick()
+-- Toggle AutoClick
+local AutoClickToggle = Tabs.Main:AddToggle("AutoClickToggle", { Title = "AutoClick", Default = settings:GetAttribute("AutoClick") or false })
+AutoClickToggle:OnChanged(function(state)
+    setAutoClick(state)
+end)
 
--- Pantau perubahan pada atribut AutoClick
+-- Pastikan toggle tetap update jika ada perubahan dari luar
+settings:GetAttributeChangedSignal("AutoArise"):Connect(function()
+    AutoAriseToggle:SetValue(settings:GetAttribute("AutoArise"))
+end)
+
 settings:GetAttributeChangedSignal("AutoClick"):Connect(function()
-    if settings:GetAttribute("AutoClick") then
-        print("🔄 AutoClick tetap aktif.")
-    end
+    AutoClickToggle:SetValue(settings:GetAttribute("AutoClick"))
 end)
 
 
--- auto attack
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local LocalHumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-
-
-coroutine.resume(coroutine.create(function()
-    RunService.RenderStepped:Connect(function()
-        if not attack then return end
-        pcall(function()
-            --- sc nyaa auto attack dengan pet
-        end)
-    end)
-end))
+---loadstring(game:HttpGet("https://github.com/Ryux05/tessss/blob/main/arise.lua"))
